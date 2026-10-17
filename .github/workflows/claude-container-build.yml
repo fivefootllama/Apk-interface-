@@ -29,6 +29,14 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          # Chaquopy's default target Python is 3.10, and it needs a matching interpreter
+          # ON THE BUILD MACHINE (separate from the one bundled into the APK) to resolve
+          # pip requirements at build time. Without this the build fails with
+          # "Couldn't find Python 3.10" even though nothing in our own code is wrong.
+
       - name: Accept Android SDK licenses
         run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
 
