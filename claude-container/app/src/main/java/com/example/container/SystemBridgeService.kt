@@ -162,7 +162,7 @@ class SystemBridgeService : AccessibilityService() {
         return ok
     }
 
-    fun typeText(text: String): Boolean {
+    fun performTypeText(text: String): Boolean {
         val root = rootInActiveWindow ?: return false
         val focused = root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT) ?: return false
         val args = android.os.Bundle().apply {
@@ -206,6 +206,6 @@ class SystemBridgeService : AccessibilityService() {
                 ?: false
 
         @JvmStatic fun typeText(text: String): Boolean =
-            instance?.typeText(text) ?: false
+            instance?.performTypeText(text) ?: false
     }
 }
