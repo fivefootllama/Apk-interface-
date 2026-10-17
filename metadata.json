@@ -1,0 +1,6 @@
+{
+  "name": "Self-Evolving Android Container Blueprint",
+  "description": "Unified Master Technical Architecture: Kotlin APK container, Chaquopy Python runtime, Accessibility bridge, Sandbox evaluator, and Multi-Agent Orchestrator.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
