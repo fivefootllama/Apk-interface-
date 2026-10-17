@@ -38,12 +38,15 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug --stacktrace 2>&1 | tee build.log
+          echo "--- app/build/outputs tree ---" >> build.log
+          find app/build/outputs -type f >> build.log 2>&1 || echo "(outputs dir missing)" >> build.log
 
       - uses: actions/upload-artifact@v4
         if: success()
         with:
           name: claude-container-debug-apk
           path: claude-container/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
 
       - name: Report build log to an issue on failure
         if: failure()
