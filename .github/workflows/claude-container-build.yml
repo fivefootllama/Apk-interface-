@@ -1,0 +1,43 @@
+name: Build claude-container debug APK
+
+on:
+  push:
+    paths:
+      - "claude-container/**"
+      - ".github/workflows/claude-container-build.yml"
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: claude-container
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python engine tests
+        run: python3 tests/test_python_engine.py
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Accept Android SDK licenses
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          build-root-directory: claude-container
+
+      - name: Build
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --stacktrace
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: claude-container-debug-apk
+          path: claude-container/app/build/outputs/apk/debug/*.apk
