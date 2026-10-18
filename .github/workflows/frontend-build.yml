@@ -28,6 +28,12 @@ jobs:
       - name: Install, typecheck, build
         run: |
           set -o pipefail
+          # Works around a known npm arborist bug ("Cannot read properties of
+          # null (reading 'edgesOut')") seen with the npm version bundled in
+          # setup-node@v4's node 20 -- there's no package-lock.json committed
+          # (only bun.lock, which npm doesn't read), so npm has to resolve
+          # the whole dependency graph fresh, and older npm trips on that.
+          npm install -g npm@11
           { npm install --no-audit --no-fund \
             && npm run lint \
             && npm run build; } 2>&1 | tee build.log
