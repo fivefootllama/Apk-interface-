@@ -1,27 +1,18 @@
 import React, { useState } from 'react';
-import { 
-  Play, 
-  Sparkles, 
-  CheckCircle2, 
-  RotateCw, 
-  ShieldCheck, 
-  Lock, 
-  Copy, 
-  Check, 
-  Terminal, 
-  Code2, 
-  Tv, 
-  Smartphone, 
-  MessageSquare, 
-  Layers, 
-  ArrowRight,
-  Eye,
-  RefreshCw,
-  AlertTriangle
+import {
+  Play,
+  CheckCircle2,
+  RotateCw,
+  ShieldCheck,
+  Copy,
+  Check,
+  Code2,
+  Tv,
+  RefreshCw
 } from 'lucide-react';
 
 export const AutomationSolutionsStudio: React.FC = () => {
-  const [activeSolution, setActiveSolution] = useState<'skip_ad' | 'sms_otp' | 'security_audit'>('skip_ad');
+  const [activeSolution, setActiveSolution] = useState<'skip_ad' | 'security_audit'>('skip_ad');
   const [copied, setCopied] = useState<boolean>(false);
 
   // Flow 1: YouTube Skip Ad state
@@ -30,15 +21,7 @@ export const AutomationSolutionsStudio: React.FC = () => {
   const [isAdRunning, setIsAdRunning] = useState<boolean>(false);
   const [adResultJson, setAdResultJson] = useState<any>(null);
 
-  // Flow 2: SMS OTP state
-  const [smsOtpCode, setSmsOtpCode] = useState<string>('849201');
-  const [filledOtpBoxes, setFilledOtpBoxes] = useState<string[]>(['', '', '', '', '', '']);
-  const [isOtpRunning, setIsOtpRunning] = useState<boolean>(false);
-  const [otpVerified, setOtpVerified] = useState<boolean>(false);
-  const [otpExecutionLogs, setOtpExecutionLogs] = useState<string[]>([]);
-  const [otpResultJson, setOtpResultJson] = useState<any>(null);
-
-  // Flow 3: Security Audit state
+  // Flow 2: Security Audit state
   const [isAuditRunning, setIsAuditRunning] = useState<boolean>(false);
   const [auditScore, setAuditScore] = useState<number | null>(null);
   const [auditReport, setAuditReport] = useState<any>(null);
@@ -56,7 +39,7 @@ def find_skip_ad_node(node):
         return None
     view_id = str(node.get("viewIdResourceName", "")).lower()
     text = str(node.get("text", "")).lower()
-    
+
     if ("skip_ad" in view_id or "skip" in text) and node.get("visibleToUser", True):
         return node
     for child in node.get("children", []):
@@ -68,16 +51,16 @@ def main():
     # 1. Parse active window accessibility hierarchy
     raw = SystemBridgeService.getScreenHierarchyJson()
     tree = json.loads(raw).get("tree", {})
-    
+
     # 2. Locate Skip Ad button
     target = find_skip_ad_node(tree)
     if not target:
         return {"status": "skipped", "reason": "No Skip Ad button visible"}
-        
+
     bounds = target.get("bounds", {})
     cx = float(bounds.get("centerX", 287.5))
     cy = float(bounds.get("centerY", 205.0))
-    
+
     # 3. Dispatch gesture click to skip button coordinates
     success = SystemBridgeService.dispatchClick(cx, cy)
     return {
@@ -87,40 +70,8 @@ def main():
         "dispatched": success
     }
 `,
-    sms_otp: `"""
-Suggestion 2: 2FA SMS OTP Code Extraction & Form Auto-Fill
-Location: context.filesDir/actions/action_extract_otp.py
-"""
-import json
-import re
-from com.selfevolving.container import SystemBridgeService
-
-def extract_otp_from_text(raw_text):
-    # Regex matching 6-digit numeric verification tokens
-    match = re.search(r'\\b(\\d{6})\\b', raw_text)
-    return match.group(1) if match else None
-
-def main():
-    # 1. Read notification hierarchy
-    raw = SystemBridgeService.getScreenHierarchyJson()
-    tree = json.loads(raw)
-    
-    # 2. Extract OTP token
-    otp = extract_otp_from_text(raw)
-    if not otp:
-        return {"status": "not_found", "message": "No 6-digit OTP code found"}
-        
-    # 3. Simulate coordinate entry & click verify button
-    button_clicked = SystemBridgeService.dispatchClick(180.0, 440.0)
-    return {
-        "status": "success",
-        "otp_code": otp,
-        "digits_filled": list(otp),
-        "verified": button_clicked
-    }
-`,
     security_audit: `"""
-Suggestion 3: Security & Accessibility Hierarchy Compliance Audit
+Suggestion 2: Security & Accessibility Hierarchy Compliance Audit
 Location: context.filesDir/tools/tool_security_audit.py
 """
 import json
@@ -129,26 +80,26 @@ from com.selfevolving.container import SystemBridgeService
 def audit_hierarchy(root_node):
     violations = []
     audited_count = 0
-    
+
     def check_node(n):
         nonlocal audited_count
         if not isinstance(n, dict): return
         audited_count += 1
-        
+
         # 1. Check touch target size >= 48dp (WCAG AA 2.5.5)
         bounds = n.get("bounds", {})
         w = bounds.get("width", 0)
         h = bounds.get("height", 0)
         if n.get("clickable") and (w < 48 or h < 48) and (w > 0 and h > 0):
             violations.append({"id": n.get("id"), "issue": "Touch target < 48dp"})
-            
+
         # 2. Check accessibility labels
         if n.get("clickable") and not n.get("text") and not n.get("contentDescription"):
             violations.append({"id": n.get("id"), "issue": "Missing contentDescription"})
-            
+
         for child in n.get("children", []):
             check_node(child)
-            
+
     check_node(root_node)
     score = max(0, 100 - len(violations) * 5)
     return {"audited_nodes": audited_count, "score": score, "violations": violations}
@@ -194,52 +145,7 @@ def audit_hierarchy(root_node):
     }, 400);
   };
 
-  // Execution: Suggestion 2 (SMS OTP)
-  const handleRunExtractOtp = () => {
-    setIsOtpRunning(true);
-    setOtpExecutionLogs([]);
-    setOtpResultJson(null);
-    setFilledOtpBoxes(['', '', '', '', '', '']);
-    setOtpVerified(false);
-
-    const logs: string[] = [];
-    const addLog = (msg: string) => {
-      logs.push(`[${new Date().toLocaleTimeString()}] ${msg}`);
-      setOtpExecutionLogs([...logs]);
-    };
-
-    addLog('Executing action_extract_otp.py via DynamicModuleLoader...');
-    setTimeout(() => {
-      addLog('Reading notification text: "Bank Auth: Your code is 849201"');
-      addLog('Regex search r"\\b\\d{6}\\b" -> Matched token: "849201"');
-      
-      const digits = smsOtpCode.split('');
-      digits.forEach((d, i) => {
-        setTimeout(() => {
-          setFilledOtpBoxes(prev => {
-            const next = [...prev];
-            next[i] = d;
-            return next;
-          });
-        }, (i + 1) * 80);
-      });
-
-      setTimeout(() => {
-        addLog('Dispatched click on Verify button at (180.0, 440.0)');
-        setOtpVerified(true);
-        setOtpResultJson({
-          status: 'success',
-          otp_code: smsOtpCode,
-          digits_filled: digits,
-          verified: true,
-          auth_session: 'AUTHORIZED_ACTIVE'
-        });
-        setIsOtpRunning(false);
-      }, 700);
-    }, 350);
-  };
-
-  // Execution: Suggestion 3 (Security Audit)
+  // Execution: Suggestion 2 (Security Audit)
   const handleRunSecurityAudit = () => {
     setIsAuditRunning(true);
     setAuditScore(null);
@@ -283,11 +189,11 @@ def audit_hierarchy(root_node):
             <span>CHAQUOPY + ACCESSIBILITY BRIDGE</span>
           </div>
           <h2 className="text-base font-bold text-white tracking-tight mt-1">
-            Production Automation Solutions (All 3 Suggestions)
+            Production Automation Solutions
           </h2>
           <p className="text-xs text-zinc-300 mt-1 max-w-2xl">
-            Live interactive implementations for the three suggested automation flows: 
-            <strong> YouTube Skip Ad</strong>, <strong>2FA SMS OTP Extraction</strong>, and <strong>Accessibility Security Audit</strong>.
+            Live interactive implementations for the automation flows:
+            <strong> YouTube Skip Ad</strong> and <strong>Accessibility Security Audit</strong>.
           </p>
         </div>
 
@@ -304,16 +210,6 @@ def audit_hierarchy(root_node):
             1. Skip Ad
           </button>
           <button
-            onClick={() => setActiveSolution('sms_otp')}
-            className={`btn-tactile px-3 py-1.5 text-xs font-mono font-bold rounded-md transition-all ${
-              activeSolution === 'sms_otp'
-                ? 'btn-tactile-primary'
-                : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            2. 2FA OTP
-          </button>
-          <button
             onClick={() => setActiveSolution('security_audit')}
             className={`btn-tactile px-3 py-1.5 text-xs font-mono font-bold rounded-md transition-all ${
               activeSolution === 'security_audit'
@@ -321,7 +217,7 @@ def audit_hierarchy(root_node):
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
-            3. Sec Audit
+            2. Sec Audit
           </button>
         </div>
       </div>
@@ -336,7 +232,6 @@ def audit_hierarchy(root_node):
                 <Code2 className="w-4 h-4 text-emerald-400" />
                 <span className="text-xs font-mono font-bold text-zinc-200">
                   {activeSolution === 'skip_ad' && 'actions/action_skip_ad.py'}
-                  {activeSolution === 'sms_otp' && 'actions/action_extract_otp.py'}
                   {activeSolution === 'security_audit' && 'tools/tool_security_audit.py'}
                 </span>
               </div>
@@ -385,7 +280,7 @@ def audit_hierarchy(root_node):
                         disabled={isAdRunning}
                         className="btn-tactile btn-tactile-amber px-4 py-2 text-xs font-bold rounded-lg gap-1.5"
                       >
-                        <Sparkles className="w-3.5 h-3.5" />
+                        <Play className="w-3.5 h-3.5" />
                         <span>Skip Ad » (Target: 287.5, 205.0)</span>
                       </button>
                     </div>
@@ -450,78 +345,7 @@ def audit_hierarchy(root_node):
             </div>
           )}
 
-          {/* Solution 2: 2FA SMS OTP Test Bench */}
-          {activeSolution === 'sms_otp' && (
-            <div className="border border-zinc-800 rounded-xl overflow-hidden bg-zinc-950 p-5 space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4 text-cyan-400" />
-                  <h3 className="text-sm font-semibold text-white">2FA SMS Notification & Auto-Fill Bench</h3>
-                </div>
-                <span className="text-[10px] font-mono text-cyan-400">Regex Tokenizer</span>
-              </div>
-
-              {/* Incoming SMS Notification Simulation */}
-              <div className="p-3 bg-zinc-900 border border-cyan-500/40 rounded-xl space-y-1">
-                <div className="flex items-center justify-between text-[10px] font-mono text-cyan-400">
-                  <span className="font-bold">SYSTEM NOTIFICATION · MESSAGES</span>
-                  <span>SIM 1</span>
-                </div>
-                <div className="text-xs text-white font-medium">Bank Security Center:</div>
-                <div className="text-xs text-zinc-300">
-                  Your verification code is <strong className="text-emerald-400 font-mono font-bold text-sm">{smsOtpCode}</strong>. Do not share.
-                </div>
-              </div>
-
-              {/* Target 2FA Verification Form */}
-              <div className="p-4 bg-zinc-900 rounded-xl border border-zinc-800 text-center space-y-3">
-                <h4 className="text-xs font-bold text-white">Enter 6-Digit OTP Code</h4>
-                
-                <div className="flex justify-center gap-2">
-                  {filledOtpBoxes.map((digit, idx) => (
-                    <div
-                      key={idx}
-                      className={`w-9 h-11 rounded-lg border flex items-center justify-center font-mono text-base font-bold transition-all ${
-                        digit
-                          ? 'border-emerald-500 bg-emerald-950/60 text-emerald-300 scale-105'
-                          : 'border-zinc-700 bg-zinc-950 text-zinc-500'
-                      }`}
-                    >
-                      {digit || '·'}
-                    </div>
-                  ))}
-                </div>
-
-                {otpVerified ? (
-                  <div className="p-2.5 bg-emerald-950/80 border border-emerald-600 rounded-lg text-emerald-300 text-xs font-mono flex items-center justify-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>OTP Verified! User Authenticated Successfully.</span>
-                  </div>
-                ) : (
-                  <button
-                    onClick={handleRunExtractOtp}
-                    disabled={isOtpRunning}
-                    className="w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
-                  >
-                    {isOtpRunning ? <RotateCw className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                    <span>Run action_extract_otp.py & Auto-Submit</span>
-                  </button>
-                )}
-              </div>
-
-              {/* Result JSON */}
-              {otpResultJson && (
-                <div className="p-3 bg-zinc-900/60 rounded-lg border border-zinc-800 font-mono text-xs text-zinc-300">
-                  <div className="text-[10px] font-mono text-zinc-500 uppercase pb-1 mb-1 border-b border-zinc-800">
-                    Returned Python Execution Payload:
-                  </div>
-                  <pre>{JSON.stringify(otpResultJson, null, 2)}</pre>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Solution 3: Security & Accessibility Audit Bench */}
+          {/* Solution 2: Security & Accessibility Audit Bench */}
           {activeSolution === 'security_audit' && (
             <div className="border border-zinc-800 rounded-xl overflow-hidden bg-zinc-950 p-5 space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
