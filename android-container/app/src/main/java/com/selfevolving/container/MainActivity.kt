@@ -1,15 +1,23 @@
 package com.selfevolving.container
 
-import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
 import java.io.File
 
+/**
+ * UI is built programmatically rather than via a layout XML resource. The
+ * previous version called setContentView(R.layout.activity_main) /
+ * findViewById(R.id.text_status), but no res/layout/activity_main.xml existed
+ * anywhere in the project -- resource linking would fail before Kotlin
+ * compilation was ever reached. Building the view in code removes that
+ * dependency entirely, matching the pattern already proven to build in
+ * claude-container's CI.
+ */
 class MainActivity : AppCompatActivity() {
 
     companion object {
@@ -21,9 +29,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        statusTextView = findViewById(R.id.text_status)
+        statusTextView = TextView(this).apply {
+            setPadding(32, 32, 32, 32)
+            textSize = 13f
+            text = "Self-Evolving Container"
+        }
+        setContentView(ScrollView(this).apply { addView(statusTextView) })
 
         log("Starting Self-Evolving Android Container initialization...")
 

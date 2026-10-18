@@ -1,6 +1,6 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
     id("com.chaquo.python")
 }
 
@@ -17,17 +17,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Chaquopy NDK ABI configuration
         ndk {
-            abiFilters.addAll(listOf("arm64-v8a", "x86_64"))
-        }
-
-        // Chaquopy Python runtime configuration (No explicit python version block specified)
-        python {
-            pip {
-                install("requests")
-                install("urllib3")
-            }
+            abiFilters += listOf("arm64-v8a", "x86_64")
         }
     }
 
@@ -52,17 +43,27 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+}
 
-    buildFeatures {
-        viewBinding = true
+// Chaquopy's own DSL block (not android.defaultConfig.python{}) -- this is the
+// syntax verified to resolve correctly in claude-container's CI build.
+chaquopy {
+    defaultConfig {
+        // No explicit python version: Chaquopy's default (3.10) is used. The CI
+        // build machine needs a matching host Python 3.10 interpreter -- see
+        // actions/setup-python in the workflow -- separate from the one Chaquopy
+        // bundles into the APK itself.
+        pip {
+            install("requests")
+            install("urllib3")
+        }
     }
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.11.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
