@@ -1,6 +1,6 @@
 # BUILD_AND_CHANGELOG.md
 
-This file documents the code changes I will make to fix TypeScript/package issues, ensure the Android project is buildable, and records the rationale for each change. It also contains a prioritized checklist (Must-fix before launch / Nice-to-have) and a short changelog of modifications made in the repository.
+This file documents the code changes I will make to fix TypeScript/package issues, ensure the Android project is buildable, and records the rationale for each change. It also contains a prioritized checklist and issue log for the repository.
 
 ---
 
@@ -49,6 +49,55 @@ Nice-to-have (post-launch or later)
 - `chore(deps): pin typescript to ^5.3.0 and update devDependencies`
 - `chore(build): add gradle wrapper to android-container`
 - `docs: add README.md and BUILD_AND_CHANGELOG.md`
+
+---
+
+## Issues identified from CI run 39062491277
+
+### 1) Android/Kotlin compile failure blocks the APK build
+- Status: [x] Confirmed
+- Evidence: GitHub Actions run `39062491277` failed at `:app:compileDebugKotlin`.
+- Workflow target: `claude-container` project.
+- Impact: Gradle stops before producing the debug APK; no artifact can be uploaded.
+
+### 2) Duplicate/conflicting Kotlin declaration in `SystemBridgeService`
+- Status: [x] Confirmed
+- Evidence: Build log reported:
+  - `fun typeText(text: String): Boolean defined in com.example.container.SystemBridgeService`
+- Nature of issue: duplicate/conflicting function definition in the same class, or conflicting generated/declared overloads that cause a Kotlin compilation error.
+- Relevant file: `claude-container/app/src/main/java/com/example/container/SystemBridgeService.kt`
+- Impact: Kotlin compiler aborts; the Android app cannot build.
+
+### 3) No APK generated after compile failure
+- Status: [x] Confirmed
+- Evidence: Gradle failed before artifact creation and the artifact upload step reported:
+  - `No files were found with the provided path: claude-container/app/build/outputs/apk/debug/*.apk`
+- Impact: CI cannot produce the debug APK for download or inspection.
+
+### 4) Artifact upload step failed because the build never completed
+- Status: [x] Confirmed
+- Evidence: `actions/upload-artifact@v4` ran after the failed build, then failed with "No files were found..."
+- Impact: even the downstream packaging step is blocked by the Kotlin compile failure.
+
+### 5) Repo/project naming confusion across directories
+- Status: [x] Confirmed
+- Evidence: there are both `android-container/` and `claude-container/` Android projects in the repo, and the workflow specifically targets `claude-container`.
+- Impact: this creates ambiguity for developers and CI, and makes it easy to patch the wrong source tree. The actual failing workflow is tied to `claude-container`, not the root `android-container` project.
+
+### 6) Python tests pass, but they do not validate the Android build
+- Status: [x] Confirmed
+- Evidence: `python3 tests/test_python_engine.py` passed before the Gradle build started.
+- Impact: green Python results can hide a broken Android app pipeline. The CI workflow must treat Android compilation as a separate required gate.
+
+### 7) Build log capture/reporting is present but only triggered after failure
+- Status: [x] Confirmed
+- Evidence: workflow contains the failure-reporting issue step after the build step.
+- Impact: build failure is caught and logged, but the code still remains broken until the Kotlin issue is fixed.
+
+---
+
+## Current blocker summary
+The primary blocker is the Kotlin compile error in `claude-container/app/src/main/java/com/example/container/SystemBridgeService.kt` caused by the `typeText` symbol conflict. Until that is resolved, the Android app cannot assemble an APK and the workflow cannot complete successfully.
 
 ---
 
