@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">Self-Evolving Container</string>
-    <string name="accessibility_service_description">Lets Self-Evolving Container read the screen contents and perform taps, swipes and text entry on your behalf, for the automation actions you configure.</string>
-</resources>

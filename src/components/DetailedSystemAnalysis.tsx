@@ -50,7 +50,7 @@ export const DetailedSystemAnalysis: React.FC = () => {
       title: 'Prompt 1: Android Kotlin APK Shell & Lifecycle',
       expectedSpec: 'Self-evolving container app lifecycle, background service binding, and permission management.',
       implementedStatus: 'VERIFIED_100%',
-      targetFiles: ['android-container/AppContainer.kt', 'android-container/MainActivity.kt'],
+      targetFiles: ['claude-container/AppContainer.kt', 'claude-container/MainActivity.kt'],
       notes: 'Kotlin APK container initialized with single-instance runtime and background daemon.'
     },
     {
@@ -59,7 +59,7 @@ export const DetailedSystemAnalysis: React.FC = () => {
       title: 'Prompt 2: Accessibility Bridge & Hardware Keystore',
       expectedSpec: 'AccessibilityNodeInfo node streaming, click dispatch, and AES-256-GCM MasterKey encryption.',
       implementedStatus: 'VERIFIED_100%',
-      targetFiles: ['android-container/AccessibilityBridgeService.kt', 'android-container/KeystoreManager.kt'],
+      targetFiles: ['claude-container/AccessibilityBridgeService.kt', 'claude-container/KeystoreManager.kt'],
       notes: 'Hardware-backed AndroidKeyStore provider storing Claude, Gemini, Grok, and HF credentials securely.'
     },
     {
@@ -68,7 +68,7 @@ export const DetailedSystemAnalysis: React.FC = () => {
       title: 'Prompt 3: Chaquopy CPython Runtime Bridge',
       expectedSpec: 'Embedded Python 3.11 VM, GIL synchronization, and bidirectional SystemBridgeService JNI calls.',
       implementedStatus: 'VERIFIED_100%',
-      targetFiles: ['android-container/ChaquopyRuntime.kt', 'android-container/SystemBridgeService.kt'],
+      targetFiles: ['claude-container/ChaquopyRuntime.kt', 'claude-container/SystemBridgeService.kt'],
       notes: 'SystemBridgeService exports getScreenHierarchyJson() and dispatchClick(x, y) to Python.'
     },
     {
@@ -77,7 +77,7 @@ export const DetailedSystemAnalysis: React.FC = () => {
       title: 'Prompt 4: Dual-Phase Sandbox Security Evaluator',
       expectedSpec: 'Phase 1: static AST import scanning. Phase 2: isolated REPL execution with 5-second watchdog timer.',
       implementedStatus: 'VERIFIED_100%',
-      targetFiles: ['android-container/DualPhaseSandbox.kt', 'android-container/static_validator.py', 'android-container/dynamic_runner.py'],
+      targetFiles: ['claude-container/DualPhaseSandbox.kt', 'claude-container/static_validator.py', 'claude-container/dynamic_runner.py'],
       notes: 'Blocks unsafe primitives (os.system, subprocess); tests scripts in non-promoted sandbox directory.'
     },
     {
@@ -86,7 +86,7 @@ export const DetailedSystemAnalysis: React.FC = () => {
       title: 'Prompt 5: Multi-Provider Router & Adaptive Failover',
       expectedSpec: 'Routing between Anthropic Claude, Google Gemini, xAI Grok, Hugging Face with exponential backoff.',
       implementedStatus: 'VERIFIED_100%',
-      targetFiles: ['android-container/FailoverRouter.kt', 'android-container/ModelRouter.py'],
+      targetFiles: ['claude-container/FailoverRouter.kt', 'claude-container/ModelRouter.py'],
       notes: 'Auto-routes when rate-limited (HTTP 429) or timed out; maintains provider health state machine.'
     },
     {
@@ -95,7 +95,7 @@ export const DetailedSystemAnalysis: React.FC = () => {
       title: 'Prompt 6: Generator-Critic Loop & Checkpoint Handoff',
       expectedSpec: 'Adversarial self-repair loop: Model A generates draft, Model B reviews, feedback routed to Turn 2.',
       implementedStatus: 'VERIFIED_100%',
-      targetFiles: ['android-container/Orchestrator.kt', 'android-container/turn_manager.py'],
+      targetFiles: ['claude-container/Orchestrator.kt', 'claude-container/turn_manager.py'],
       notes: 'Automatic state serialization, traceback injection into prompt, and promotion to actions/ on approval.'
     },
     {
@@ -104,7 +104,7 @@ export const DetailedSystemAnalysis: React.FC = () => {
       title: 'Prompt 7: Master Automation Modules Suite',
       expectedSpec: 'Three atomic Python scripts performing real-world Android automation tasks.',
       implementedStatus: 'VERIFIED_100%',
-      targetFiles: ['android-container/action_skip_ad.py', 'android-container/tool_security_audit.py'],
+      targetFiles: ['claude-container/action_skip_ad.py', 'claude-container/tool_security_audit.py'],
       notes: 'Scripts present in codeRepository.ts and interactive in AutomationSolutionsStudio. A third module (action_extract_otp.py, SMS/2FA code auto-capture) was removed: it matched the pattern used by Android banking trojans to silently complete account takeovers.'
     },
 
