@@ -1,0 +1,3 @@
+<resources>
+    <string name="accessibility_description">Lets the container read the on-screen UI tree and perform taps, swipes and global actions that you or your scripts request.</string>
+</resources>

@@ -1,0 +1,74 @@
+name: Build claude-container debug APK
+
+on:
+  push:
+    paths:
+      - "claude-container/**"
+      - ".github/workflows/claude-container-build.yml"
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: claude-container
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python engine tests
+        run: python3 tests/test_python_engine.py
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          # Chaquopy's default target Python is 3.10, and it needs a matching interpreter
+          # ON THE BUILD MACHINE (separate from the one bundled into the APK) to resolve
+          # pip requirements at build time. Without this the build fails with
+          # "Couldn't find Python 3.10" even though nothing in our own code is wrong.
+
+      - name: Accept Android SDK licenses
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --stacktrace 2>&1 | tee build.log
+          echo "--- app/build/outputs tree ---" >> build.log
+          find app/build/outputs -type f >> build.log 2>&1 || echo "(outputs dir missing)" >> build.log
+
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: claude-container-debug-apk
+          path: claude-container/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+      - name: Report build log to an issue on failure
+        if: failure()
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          LOG=$(tail -c 60000 claude-container/build.log)
+          BODY=$(printf '### Build failed on `%s`\nRun: %s\n\n```\n%s\n```\n' \
+            "${{ github.sha }}" "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" "$LOG")
+          echo "$BODY" > /tmp/issue_body.md
+          NUM=$(gh issue list --repo "${{ github.repository }}" --search "claude-container CI build log in:title" --state open --json number --jq '.[0].number')
+          if [ -n "$NUM" ]; then
+            gh issue comment "$NUM" --repo "${{ github.repository }}" --body-file /tmp/issue_body.md
+          else
+            gh issue create --repo "${{ github.repository }}" --title "claude-container CI build log" --body-file /tmp/issue_body.md
+          fi
