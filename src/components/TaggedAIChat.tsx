@@ -37,7 +37,6 @@ export const TaggedAIChat: React.FC = () => {
     '#codegen',
     '#critic_audit',
     '#security',
-    '#otp_extraction',
     '#system_repair',
     '#youtube_flow'
   ];
@@ -78,8 +77,8 @@ export const TaggedAIChat: React.FC = () => {
       sender: 'user',
       provider: 'ANTHROPIC',
       model: 'claude-3-7-sonnet-20250219',
-      content: 'Generate a Python module to parse and extract the 6-digit numeric OTP code from the latest SMS notification.',
-      tags: ['#codegen', '#otp_extraction', '#security'],
+      content: 'Generate a Python module that audits the current accessibility node tree for WCAG touch-target compliance.',
+      tags: ['#codegen', '#critic_audit', '#security'],
       status: 'success'
     },
     {
@@ -89,18 +88,16 @@ export const TaggedAIChat: React.FC = () => {
       provider: 'ANTHROPIC',
       model: 'claude-3-7-sonnet-20250219',
       content: `\`\`\`python
-import re
 from com.selfevolving.container import SystemBridgeService
+import json
 
-def extract_otp():
-    hierarchy = SystemBridgeService.getScreenHierarchyJson()
-    # Search for standard 6-digit numeric OTP tokens
-    match = re.search(r'\\b(\\d{6})\\b', hierarchy)
-    if match:
-        return {"status": "found", "otp": match.group(1)}
-    return {"status": "not_found"}
+def audit_touch_targets():
+    hierarchy = json.loads(SystemBridgeService.getScreenHierarchyJson())
+    # Flag clickable nodes smaller than the 48dp WCAG AA 2.5.5 minimum
+    violations = []
+    return {"status": "ok", "violations": violations}
 \`\`\``,
-      tags: ['#codegen', '#otp_extraction', '#security'],
+      tags: ['#codegen', '#critic_audit', '#security'],
       latencyMs: 720,
       tokensUsed: 312,
       status: 'success'
@@ -316,7 +313,6 @@ def extract_otp():
             <div className="space-y-1.5">
               {[
                 { prompt: 'Detect and dismiss YouTube video sponsored ad surface', tags: ['#accessibility', '#youtube_flow'] },
-                { prompt: 'Extract 6-digit OTP from incoming SMS notification', tags: ['#otp_extraction', '#codegen'] },
                 { prompt: 'Audit screen hierarchy for security compliance', tags: ['#critic_audit', '#security'] }
               ].map((item, idx) => (
                 <button

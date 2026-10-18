@@ -116,16 +116,14 @@ export const PromptCodeExplorer: React.FC<PromptCodeExplorerProps> = ({ initialP
       ]
     },
     7: {
-      title: 'Prompt 7 / Production Solutions: YouTube Ad Skip, SMS OTP & Security Auditor',
+      title: 'Prompt 7 / Production Solutions: YouTube Ad Skip & Security Auditor',
       role: 'Act as a production Android automation & security engineer.',
       icon: <Sparkles className="w-4 h-4 text-emerald-400" />,
       promptText: `Production Automation Solutions & Security Suite for Android Container:
 1. action_skip_ad.py: High-speed YouTube Ad Skip automation locating 'skip_ad' resource IDs or text within active window and dispatching programmatic gesture clicks via SystemBridgeService.
-2. action_extract_otp.py: SMS & Notification 2FA One-Time Password verification module extracting 4-8 digit numeric tokens and locating submission buttons for auto-fill verification.
-3. tool_security_audit.py: Accessibility Hierarchy & Security compliance inspector auditing minimum 48x48dp touch target bounds, missing contentDescription labels, and unmasked credential leaks.`,
+2. tool_security_audit.py: Accessibility Hierarchy & Security compliance inspector auditing minimum 48x48dp touch target bounds, missing contentDescription labels, and unmasked credential leaks.`,
       verificationPoints: [
         'action_skip_ad.py: Traverses Accessibility tree, calculates center click coordinates, dispatches GestureDescription',
-        'action_extract_otp.py: Regular expression pattern extraction for 2FA SMS tokens and auto-submission button targeting',
         'tool_security_audit.py: WCAG AA 2.5.5 touch target geometry checking (min 48x48dp), contentDescription validation, and token leak scanning',
         'All modules run dynamically via DynamicModuleLoader in context.filesDir without app recompilation'
       ]

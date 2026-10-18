@@ -51,10 +51,10 @@ interface OperationsHubProps {
 export const OperationsHub: React.FC<OperationsHubProps> = ({ onNavigateToTab, onOpenOnboarding }) => {
   // Active sub-view in the central workstation: 'solutions' | 'ai-dispatcher' | 'google-accounts' | 'comparative-analysis'
   const [activeCenterView, setActiveCenterView] = useState<'solutions' | 'ai-dispatcher' | 'google-accounts' | 'comparative-analysis'>('solutions');
-  const [activeSolutionTab, setActiveSolutionTab] = useState<'skip_ad' | 'sms_otp' | 'security_audit'>('skip_ad');
+  const [activeSolutionTab, setActiveSolutionTab] = useState<'skip_ad' | 'security_audit'>('skip_ad');
 
   // Virtual Android Screen state
-  const [simScreen, setSimScreen] = useState<'youtube' | 'bank_otp' | 'dashboard' | 'security_view'>('youtube');
+  const [simScreen, setSimScreen] = useState<'youtube' | 'dashboard' | 'security_view'>('youtube');
   const [lastTap, setLastTap] = useState<{ x: number; y: number } | null>(null);
   const [systemLog, setSystemLog] = useState<string[]>([]);
   const [clickEffect, setClickEffect] = useState<{ x: number; y: number; active: boolean } | null>(null);
@@ -65,15 +65,7 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ onNavigateToTab, o
   const [adLog, setAdLog] = useState<string[]>([]);
   const [adResult, setAdResult] = useState<any>(null);
 
-  // Suggestion 2: SMS OTP Extraction state
-  const [otpCode, setOtpCode] = useState<string>('849201');
-  const [otpBoxes, setOtpBoxes] = useState<string[]>(['', '', '', '', '', '']);
-  const [otpRunning, setOtpRunning] = useState<boolean>(false);
-  const [otpVerified, setOtpVerified] = useState<boolean>(false);
-  const [otpLog, setOtpLog] = useState<string[]>([]);
-  const [otpResult, setOtpResult] = useState<any>(null);
-
-  // Suggestion 3: Security & Accessibility Compliance state
+  // Suggestion 2: Security & Accessibility Compliance state
   const [auditRunning, setAuditRunning] = useState<boolean>(false);
   const [auditScore, setAuditScore] = useState<number | null>(null);
   const [auditViolations, setAuditViolations] = useState<any[]>([]);
@@ -284,55 +276,7 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ onNavigateToTab, o
     }, 400);
   };
 
-  // Run Suggestion 2: SMS OTP Extraction & Fill
-  const handleRunSmsOtp = () => {
-    setOtpRunning(true);
-    setSimScreen('bank_otp');
-    setOtpLog([]);
-    setOtpResult(null);
-    setOtpBoxes(['', '', '', '', '', '']);
-    setOtpVerified(false);
-
-    const logs: string[] = [];
-    const addL = (m: string) => {
-      logs.push(`[${new Date().toLocaleTimeString()}] ${m}`);
-      setOtpLog([...logs]);
-      appendSystemLog(m);
-    };
-
-    addL('Executing action_extract_otp.py via DynamicModuleLoader...');
-    setTimeout(() => {
-      addL('Scanning notification hierarchy: "Your Chase 2FA login code is 849201"');
-      addL('Regex search r"\\b\\d{6}\\b" -> Matched token: "849201"');
-
-      const digits = otpCode.split('');
-      digits.forEach((d, idx) => {
-        setTimeout(() => {
-          setOtpBoxes(prev => {
-            const copy = [...prev];
-            copy[idx] = d;
-            return copy;
-          });
-        }, (idx + 1) * 90);
-      });
-
-      setTimeout(() => {
-        addL('Dispatched click to Verify button at coordinate (180.0, 440.0)');
-        setOtpVerified(true);
-        setLastTap({ x: 180, y: 440 });
-        setOtpResult({
-          status: 'success',
-          otp_code: otpCode,
-          digits_filled: digits,
-          verified: true,
-          auth_session: 'SECURE_LOGIN_ACTIVE'
-        });
-        setOtpRunning(false);
-      }, 750);
-    }, 400);
-  };
-
-  // Run Suggestion 3: Security & Accessibility Compliance Audit
+  // Run Suggestion 2: Security & Accessibility Compliance Audit
   const handleRunSecurityAudit = () => {
     setAuditRunning(true);
     setSimScreen('security_view');
@@ -489,7 +433,7 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ onNavigateToTab, o
                 </span>
               </div>
               <p className="text-xs text-zinc-400">
-                Live interactive management of Virtual Android Device, 3 Core Automation Solutions, Hardware Keystore, and Tagged Multi-Model Dispatcher.
+                Live interactive management of Virtual Android Device, 2 Core Automation Solutions, Hardware Keystore, and Tagged Multi-Model Dispatcher.
               </p>
             </div>
           </div>
@@ -585,7 +529,7 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ onNavigateToTab, o
             </div>
             <div>
               <h3 className="text-sm font-bold text-zinc-100">
-                Core Production Solutions (The 3 Suggested Modules)
+                Core Production Solutions
               </h3>
               <p className="text-xs text-zinc-400">
                 One-click native automation workflows executing inside the APK container.
@@ -597,7 +541,7 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ onNavigateToTab, o
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {/* Solution 1: YouTube Skip Ad */}
           <div className={`depth-well rounded-xl p-3.5 border transition-all ${
             activeSolutionTab === 'skip_ad' ? 'border-amber-500/60 ring-1 ring-amber-500/20' : 'border-zinc-800'
@@ -628,37 +572,7 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ onNavigateToTab, o
             </div>
           </div>
 
-          {/* Solution 2: SMS OTP Extraction */}
-          <div className={`depth-well rounded-xl p-3.5 border transition-all ${
-            activeSolutionTab === 'sms_otp' ? 'border-emerald-500/60 ring-1 ring-emerald-500/20' : 'border-zinc-800'
-          }`}>
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <Smartphone className="w-4 h-4 text-emerald-400" />
-                <span className="text-xs font-bold text-zinc-200">2. SMS OTP Extraction</span>
-              </div>
-              <span className="text-[10px] font-mono text-zinc-500">action_extract_otp.py</span>
-            </div>
-            <p className="text-xs text-zinc-400 mb-3 line-clamp-2">
-              Intercepts incoming 2FA SMS tokens using regex \b\d{6}\b and auto-fills verification input coordinates.
-            </p>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => {
-                  setActiveSolutionTab('sms_otp');
-                  setActiveCenterView('solutions');
-                  handleRunSmsOtp();
-                }}
-                disabled={otpRunning}
-                className="btn-tactile btn-tactile-primary w-full py-2 rounded-lg text-xs font-semibold gap-1.5"
-              >
-                <Play className="w-3.5 h-3.5" />
-                <span>{otpRunning ? 'Extracting OTP...' : 'Extract & Auto-Fill'}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Solution 3: Security & Accessibility Audit */}
+          {/* Solution 2: Security & Accessibility Audit */}
           <div className={`depth-well rounded-xl p-3.5 border transition-all ${
             activeSolutionTab === 'security_audit' ? 'border-purple-500/60 ring-1 ring-purple-500/20' : 'border-zinc-800'
           }`}>
@@ -718,16 +632,6 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ onNavigateToTab, o
                 }`}
               >
                 YouTube
-              </button>
-              <button
-                onClick={() => setSimScreen('bank_otp')}
-                className={`btn-tactile flex-1 py-1 rounded text-[11px] font-medium transition-all ${
-                  simScreen === 'bank_otp'
-                    ? 'bg-zinc-800 text-white font-semibold shadow-inner'
-                    : 'text-zinc-400 hover:text-zinc-200'
-                }`}
-              >
-                2FA OTP
               </button>
               <button
                 onClick={() => setSimScreen('dashboard')}
@@ -836,53 +740,7 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ onNavigateToTab, o
                   </div>
                 )}
 
-                {/* SCREEN CONTENT 2: BANKING 2FA OTP SCREEN */}
-                {simScreen === 'bank_otp' && (
-                  <div className="p-2.5 space-y-3 h-full flex flex-col justify-center">
-                    <div className="text-center space-y-1">
-                      <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
-                        <Lock className="w-4 h-4" />
-                      </div>
-                      <h4 className="text-xs font-bold text-zinc-100">Secure Two-Factor Auth</h4>
-                      <p className="text-[10px] text-zinc-400">Enter the 6-digit code sent via SMS</p>
-                    </div>
-
-                    {/* 6 OTP Boxes */}
-                    <div className="flex justify-center gap-1.5 py-1">
-                      {otpBoxes.map((digit, idx) => (
-                        <div
-                          key={idx}
-                          className={`w-7 h-9 rounded flex items-center justify-center font-mono font-bold text-sm border ${
-                            digit
-                              ? 'bg-emerald-950/60 border-emerald-500 text-emerald-300'
-                              : 'bg-zinc-950 border-zinc-700 text-zinc-400'
-                          }`}
-                        >
-                          {digit}
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Verify Button */}
-                    <button
-                      className={`btn-tactile w-full py-1.5 rounded-lg text-xs font-bold transition-all ${
-                        otpVerified
-                          ? 'bg-emerald-600 text-white'
-                          : 'bg-zinc-800 text-zinc-300 border border-zinc-700'
-                      }`}
-                    >
-                      {otpVerified ? 'Authentication Verified' : 'Verify Identity'}
-                    </button>
-
-                    {/* Simulated Notification Toast */}
-                    <div className="p-2 bg-zinc-950/90 rounded border border-emerald-500/40 text-[10px] font-mono">
-                      <span className="text-emerald-400 font-bold">SMS Intercepted: </span>
-                      <span className="text-zinc-300">"Your Chase auth code is 849201"</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* SCREEN CONTENT 3: APK DASHBOARD */}
+                {/* SCREEN CONTENT 2: APK DASHBOARD */}
                 {simScreen === 'dashboard' && (
                   <div className="p-2.5 space-y-2 h-full flex flex-col">
                     <div className="p-2 bg-zinc-950 rounded-lg border border-zinc-800">
@@ -1001,7 +859,7 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ onNavigateToTab, o
                   }`}
                 >
                   <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                  <span>3 Solutions Studio</span>
+                  <span>Solutions Studio</span>
                 </button>
 
                 <button
@@ -1052,7 +910,7 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ onNavigateToTab, o
               </span>
             </div>
 
-            {/* TAB CONTENT A: THE 3 AUTOMATION SOLUTIONS LIVE RUNNER */}
+            {/* TAB CONTENT A: AUTOMATION SOLUTIONS LIVE RUNNER */}
             {activeCenterView === 'solutions' && (
               <div className="space-y-4 flex-1 flex flex-col">
                 {/* Solution Sub-Selector Tabs */}
@@ -1068,16 +926,6 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ onNavigateToTab, o
                     1. YouTube Skip Ad
                   </button>
                   <button
-                    onClick={() => setActiveSolutionTab('sms_otp')}
-                    className={`btn-tactile text-xs font-medium px-2.5 py-1 rounded transition-all ${
-                      activeSolutionTab === 'sms_otp'
-                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold'
-                        : 'text-zinc-400 hover:text-zinc-200'
-                    }`}
-                  >
-                    2. SMS OTP Form
-                  </button>
-                  <button
                     onClick={() => setActiveSolutionTab('security_audit')}
                     className={`btn-tactile text-xs font-medium px-2.5 py-1 rounded transition-all ${
                       activeSolutionTab === 'security_audit'
@@ -1085,7 +933,7 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ onNavigateToTab, o
                         : 'text-zinc-400 hover:text-zinc-200'
                     }`}
                   >
-                    3. Security Audit
+                    2. Security Audit
                   </button>
                 </div>
 
@@ -1142,60 +990,7 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ onNavigateToTab, o
                   </div>
                 )}
 
-                {/* Active Solution 2: SMS OTP */}
-                {activeSolutionTab === 'sms_otp' && (
-                  <div className="space-y-3 flex-1 flex flex-col">
-                    <div className="depth-well p-3 rounded-lg border border-zinc-800/80 space-y-1.5">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-semibold text-zinc-200">2FA SMS Token Extraction</span>
-                        <span className="font-mono text-zinc-500 text-[10px]">action_extract_otp.py</span>
-                      </div>
-                      <p className="text-xs text-zinc-400">
-                        Extracts 6-digit verification code from notification text and dispatches coordinate entry.
-                      </p>
-                    </div>
-
-                    {/* Custom OTP Code Input Field with Professional Sunken Depth */}
-                    <div className="flex items-center gap-2">
-                      <label className="text-xs text-zinc-400 whitespace-nowrap">Mock OTP:</label>
-                      <input
-                        type="text"
-                        value={otpCode}
-                        onChange={(e) => setOtpCode(e.target.value)}
-                        maxLength={6}
-                        className="depth-field flex-1 px-3 py-1.5 rounded-lg text-xs font-mono text-zinc-100 outline-none"
-                        placeholder="6-digit code"
-                      />
-                    </div>
-
-                    <button
-                      onClick={handleRunSmsOtp}
-                      disabled={otpRunning}
-                      className="btn-tactile btn-tactile-primary w-full py-2.5 rounded-lg text-xs font-bold gap-2"
-                    >
-                      <Play className="w-4 h-4" />
-                      <span>{otpRunning ? 'Extracting & Auto-Filling...' : 'Trigger OTP Extraction'}</span>
-                    </button>
-
-                    <div className="flex-1 min-h-[140px] depth-well rounded-lg p-3 font-mono text-[11px] text-zinc-300 overflow-y-auto space-y-1">
-                      <div className="text-zinc-500 text-[10px] pb-1 border-b border-zinc-800 flex justify-between">
-                        <span>EXECUTION LOGS</span>
-                        <span>REGEX PARSER</span>
-                      </div>
-                      {otpLog.length === 0 ? (
-                        <p className="text-zinc-500 italic pt-2">Click 'Trigger OTP Extraction' to execute...</p>
-                      ) : (
-                        otpLog.map((l, i) => (
-                          <div key={i} className="text-emerald-300/90 leading-tight">
-                            {l}
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Active Solution 3: Security Audit */}
+                {/* Active Solution 2: Security Audit */}
                 {activeSolutionTab === 'security_audit' && (
                   <div className="space-y-3 flex-1 flex flex-col">
                     <div className="depth-well p-3 rounded-lg border border-zinc-800/80 space-y-1.5">

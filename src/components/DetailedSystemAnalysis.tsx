@@ -104,8 +104,8 @@ export const DetailedSystemAnalysis: React.FC = () => {
       title: 'Prompt 7: Master Automation Modules Suite',
       expectedSpec: 'Three atomic Python scripts performing real-world Android automation tasks.',
       implementedStatus: 'VERIFIED_100%',
-      targetFiles: ['android-container/action_skip_ad.py', 'android-container/action_extract_otp.py', 'android-container/tool_security_audit.py'],
-      notes: 'All 3 scripts present in codeRepository.ts and interactive in AutomationSolutionsStudio.'
+      targetFiles: ['android-container/action_skip_ad.py', 'android-container/tool_security_audit.py'],
+      notes: 'Scripts present in codeRepository.ts and interactive in AutomationSolutionsStudio. A third module (action_extract_otp.py, SMS/2FA code auto-capture) was removed: it matched the pattern used by Android banking trojans to silently complete account takeovers.'
     },
 
     // Category 2: Assistant Suggestions

@@ -99,7 +99,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
             Communicate directly with models using an organized <strong>tagging system</strong> to categorize requests:
           </p>
           <div className="flex flex-wrap gap-1.5 py-1">
-            {['#accessibility', '#automation', '#codegen', '#critic_audit', '#security', '#otp_extraction', '#youtube_flow'].map(t => (
+            {['#accessibility', '#automation', '#codegen', '#critic_audit', '#security', '#youtube_flow'].map(t => (
               <span key={t} className="px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-950 text-cyan-300 border border-cyan-700/60">
                 {t}
               </span>
@@ -135,7 +135,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
           <ul className="space-y-1.5 list-disc list-inside text-zinc-400">
             <li><strong>Coordinate Dispatch</strong>: Click anywhere on screen to simulate <code className="text-zinc-200">SystemBridgeService.dispatchClick(x, y)</code>.</li>
             <li><strong>Node Hierarchy JSON</strong>: View the parsed JSON tree with view IDs, bounding boxes, and clickable states.</li>
-            <li><strong>Automation Flows</strong>: Test real-time automation like YouTube Skip Ad, 2FA SMS OTP extraction, and dark mode toggles.</li>
+            <li><strong>Automation Flows</strong>: Test real-time automation like YouTube Skip Ad and dark mode toggles.</li>
           </ul>
           <div className="p-2.5 bg-zinc-950 rounded-lg border border-zinc-800 flex items-center justify-between">
             <span className="font-mono text-[11px] text-zinc-300">Tab: Android Bridge & V-Device</span>
@@ -189,7 +189,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
           </p>
           <ul className="space-y-1.5 list-disc list-inside text-zinc-400">
             <li><strong>Left Workstation</strong>: Live Virtual Android Device with screen tap simulation and accessibility bounds inspector.</li>
-            <li><strong>Center Workstation</strong>: 3 Core Automation Solutions (YouTube Skip Ad, 2FA SMS OTP extraction, Security Audit) + Tagged Multi-Model AI Messenger.</li>
+            <li><strong>Center Workstation</strong>: Core Automation Solutions (YouTube Skip Ad, Security Audit) + Tagged Multi-Model AI Messenger.</li>
             <li><strong>Right Workstation</strong>: Hardware-backed Encrypted Key Vault (Anthropic, Gemini, Grok, Hugging Face) with live ping tests and inline key editing.</li>
             <li><strong>Bottom Stream</strong>: Real-time container event telemetry and bridge communication logs.</li>
           </ul>
@@ -223,7 +223,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
             <div>✓ AndroidManifest.xml & accessibility_service_config.xml</div>
             <div>✓ MainActivity.kt & EncryptedKeyManager.kt</div>
             <div>✓ SystemBridgeService.kt</div>
-            <div>✓ action_skip_ad.py, action_extract_otp.py, tool_security_audit.py</div>
+            <div>✓ action_skip_ad.py, tool_security_audit.py</div>
             <div>✓ loader.py, sandbox_evaluator.py, router.py, orchestrator.py</div>
           </div>
           <p className="text-zinc-400">
