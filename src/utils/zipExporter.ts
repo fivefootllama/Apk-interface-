@@ -116,8 +116,10 @@ export async function exportProjectZip(): Promise<Blob> {
 
   // Production Solutions inside APK assets
   apkZip.file('assets/chaquopy/app/action_skip_ad.py', ALL_PROMPT_FILES[7]?.[0]?.code || '# Action Skip Ad');
-  apkZip.file('assets/chaquopy/app/action_extract_otp.py', ALL_PROMPT_FILES[7]?.[1]?.code || '# Action Extract OTP');
-  apkZip.file('assets/chaquopy/app/tool_security_audit.py', ALL_PROMPT_FILES[7]?.[2]?.code || '# Tool Security Audit');
+  // action_extract_otp.py removed: it auto-captured and auto-submitted 2FA/OTP codes
+  // with no visible user consent, matching the pattern used by Android banking trojans
+  // (Cerberus, Anatsa, SharkBot). Do not re-add it here or to codeRepository.ts.
+  apkZip.file('assets/chaquopy/app/tool_security_audit.py', ALL_PROMPT_FILES[7]?.[1]?.code || '# Tool Security Audit');
 
   // APK Signature Block (META-INF)
   apkZip.file('META-INF/MANIFEST.MF', `Manifest-Version: 1.0\nCreated-By: Android Gradle Plugin 8.3.1\nBuilt-By: Google AI Studio Autonomous Build\n`);
