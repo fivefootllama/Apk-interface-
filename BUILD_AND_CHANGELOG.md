@@ -100,6 +100,26 @@ This keeps exactly one source-of-truth method for text entry and avoids the Kotl
 
 ---
 
+## Verification checklist
+
+### Local validation command
+```bash
+cd claude-container
+./gradlew assembleDebug --stacktrace
+```
+
+### Expected success criteria
+- `BUILD SUCCESSFUL`
+- APK exists under `app/build/outputs/apk/debug/`
+- No duplicate Kotlin symbol errors around `typeText` or `SystemBridgeService`
+
+### Failure criteria
+- Kotlin compile error in `:app:compileDebugKotlin`
+- duplicate declaration warnings/errors around `typeText`
+- missing APK under `app/build/outputs/apk/debug/`
+
+---
+
 ## Recommended next steps
 
 1. Validate the fix locally in the claude-container project.
@@ -116,7 +136,7 @@ This keeps exactly one source-of-truth method for text entry and avoids the Kotl
 
 ---
 
-## Notes on branch coordination
+## Branch strategy note
 
 The repo appears to be operating across multiple collaborative branches, and the actual failing CI is tied to `claude-container` on `claude-merge`.
 
@@ -126,6 +146,91 @@ This means the recommended order is:
 - then propagate the same change to the parallel AI-studio branch and/or main if needed
 
 This avoids cherry-picking a partial fix into the wrong app tree and keeps both versions consistent.
+
+---
+
+## PR / merge checklist
+
+Before merging, include:
+- failing run link
+- root cause summary
+- files changed
+- validation command used
+- result of validation
+- note that Python tests are separate from Android build validation
+
+Suggested PR title:
+- `fix: resolve claude-container duplicate typeText Kotlin compile error`
+
+Suggested PR description:
+- Fixes the duplicate/conflicting `typeText` Kotlin API in `SystemBridgeService`
+- Restores `:app:compileDebugKotlin` compatibility
+- Allows APK generation and artifact upload to proceed
+- References workflow run: https://github.com/fivefootllama/Apk-interface-/actions/runs/39062491277
+
+---
+
+## Risk / impact summary
+
+- Risk: Low
+- Impact: Restores Android compile and APK generation
+- Scope: Limited to the accessibility bridge API and compile compatibility
+- Behavior: No intended Python/runtime change beyond removing the duplicate Kotlin symbol conflict
+
+---
+
+## Definition of done
+
+The fix is done when all of the following are true:
+- `claude-container` builds successfully
+- `./gradlew assembleDebug` succeeds
+- the debug APK is generated
+- CI workflow passes
+- the fix is propagated appropriately across the branch topology
+
+---
+
+## Notes on branch coordination
+
+This repo appears to include multiple collaborative branches, but the actual failing workflow is tied to the `claude-merge` branch and the `claude-container` app.
+
+That means the first verification target should be:
+- `claude-merge` with the fix applied and passing `assembleDebug`
+
+Once that is green, the same fix can be propagated to the AI-studio branch and then to `main` if that is the canonical final integration branch.
+
+---
+
+## PR draft (copy-paste-ready)
+
+Title: `fix: resolve claude-container duplicate typeText Kotlin compile error`
+
+Body:
+
+This PR fixes a Kotlin compilation failure observed in the claude-container Android build (CI run: https://github.com/fivefootllama/Apk-interface-/actions/runs/39062491277).
+
+Summary:
+- The Gradle build failed at `:app:compileDebugKotlin` due to a duplicate/conflicting `typeText` declaration in `com.example.container.SystemBridgeService`.
+- This change standardizes the accessibility bridge API to a single source-of-truth for text entry:
+  - instance method: `performTypeText(text: String): Boolean`
+  - static wrapper: `typeText(text: String): Boolean = instance?.performTypeText(text) ?: false`
+- The duplicate/conflicting method was removed to avoid Kotlin compilation errors.
+
+Files changed:
+- `claude-container/app/src/main/java/com/example/container/SystemBridgeService.kt`
+- `BUILD_AND_CHANGELOG.md`
+
+Verification steps taken / to take:
+1. Build locally: `cd claude-container && ./gradlew assembleDebug --stacktrace`
+2. Confirm `BUILD SUCCESSFUL` and APK at `app/build/outputs/apk/debug/`
+3. CI should run on merge; ensure `claude-merge` workflow passes
+
+Why this is safe:
+- The change only consolidates the bridge API surface (no change in the runtime behavior expected by Python callers; it still calls into the same instance method)
+- Low-risk change that restores compilation
+
+Notes:
+- The repo contains multiple Android subprojects (`android-container` and `claude-container`); this PR targets the `claude-container` app that the CI workflow exercises.
 
 ---
 
