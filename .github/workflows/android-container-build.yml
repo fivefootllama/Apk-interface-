@@ -42,6 +42,7 @@ jobs:
 
       - name: Build
         run: |
+          set -o pipefail
           chmod +x gradlew
           ./gradlew assembleDebug --stacktrace 2>&1 | tee build.log
           echo "--- app/build/outputs tree ---" >> build.log

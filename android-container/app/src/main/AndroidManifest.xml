@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Only the permission actually used by the code in this module. The
+    <!-- Only the permissions actually used by the code in this module. The
          previous manifest requested READ/WRITE_EXTERNAL_STORAGE and
          MANAGE_EXTERNAL_STORAGE, but nothing in this app reads or writes
-         external storage -- all state goes through EncryptedSharedPreferences
-         and applicationContext.filesDir. Removed as unused/over-broad. -->
+         external storage: all state goes through EncryptedSharedPreferences
+         and applicationContext.filesDir. Removed as unused and over-broad. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
