@@ -15,13 +15,8 @@ import java.util.concurrent.TimeUnit
 /**
  * Accessibility service exposing the screen tree and input actions.
  *
- * Python (Chaquopy) reaches it through the static [SystemBridgeService.instance] /
- * [SystemBridgeService.Companion] bridge:
- *
- *   from com.example.container import SystemBridgeService
- *   bridge = SystemBridgeService.Companion
- *   tree = bridge.getScreenTreeJson()
- *   bridge.tap(540, 1200)
+ * Python reaches it through the static bridge. Keep exactly one source-of-truth
+ * text-entry API here to avoid Kotlin duplicate-symbol failures during compilation.
  */
 class SystemBridgeService : AccessibilityService() {
 
@@ -162,11 +157,16 @@ class SystemBridgeService : AccessibilityService() {
         return ok
     }
 
+    // Single source of truth for text entry: keep this instance method and a single
+    // static wrapper only. This avoids duplicate Kotlin declarations during compile.
     fun performTypeText(text: String): Boolean {
         val root = rootInActiveWindow ?: return false
         val focused = root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT) ?: return false
         val args = android.os.Bundle().apply {
-            putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text)
+            putCharSequence(
+                AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
+                text
+            )
         }
         return focused.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args)
     }
