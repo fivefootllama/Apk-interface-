@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 jobs:
   build:
@@ -24,11 +25,25 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Install
-        run: npm install --no-audit --no-fund
+      - name: Install, typecheck, build
+        run: |
+          set -o pipefail
+          { npm install --no-audit --no-fund \
+            && npm run lint \
+            && npm run build; } 2>&1 | tee build.log
 
-      - name: Typecheck
-        run: npm run lint
-
-      - name: Build
-        run: npm run build
+      - name: Report build log to an issue on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          LOG=$(tail -c 60000 build.log)
+          BODY=$(printf '### Frontend build failed on `%s`\nRun: %s\n\n```\n%s\n```\n' \
+            "${{ github.sha }}" "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" "$LOG")
+          echo "$BODY" > /tmp/issue_body.md
+          NUM=$(gh issue list --repo "${{ github.repository }}" --search "frontend CI build log in:title" --state open --json number --jq '.[0].number')
+          if [ -n "$NUM" ]; then
+            gh issue comment "$NUM" --repo "${{ github.repository }}" --body-file /tmp/issue_body.md
+          else
+            gh issue create --repo "${{ github.repository }}" --title "frontend CI build log" --body-file /tmp/issue_body.md
+          fi
