@@ -22,6 +22,7 @@ import { OperationsHub } from './components/OperationsHub';
 import { GoogleMultiAccountManager } from './components/GoogleMultiAccountManager';
 import { DetailedSystemAnalysis } from './components/DetailedSystemAnalysis';
 import { ArrowLeft } from 'lucide-react';
+import SendToApk from './components/SendToApk';
 
 export default function App() {
   // Default to the intuitive Simple Voice Assistant APK view
@@ -151,6 +152,11 @@ export default function App() {
 
         {activeTab === 'orchestrator-loop' && (
           <OrchestratorStudio />
+        )}
+
+        {/* New simple APK bridge sender for local IPC */}
+        {activeTab === 'send-to-apk' && (
+          <SendToApk />
         )}
       </main>
 
